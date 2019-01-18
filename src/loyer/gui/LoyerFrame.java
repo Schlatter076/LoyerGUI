@@ -358,8 +358,8 @@ abstract public class LoyerFrame {
     
     persistScroll = new JScrollPane();
     persistScroll.setPreferredSize(new Dimension(100, 200));
-    persistScroll.setBorder(new TitledBorder(new LineBorder(Color.GRAY, 1), " ", TitledBorder.LEFT, TitledBorder.TOP,
-        new Font("楷体", Font.PLAIN, 16), Color.BLACK));
+    persistScroll.setBorder(new TitledBorder(new LineBorder(Color.GRAY, 1), "保留页", TitledBorder.LEFT, TitledBorder.TOP,
+        new Font("宋体", Font.PLAIN, 13), Color.BLACK));
     //persistScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
     persistScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
     tablePanel.add(dataPanel, BorderLayout.CENTER);
