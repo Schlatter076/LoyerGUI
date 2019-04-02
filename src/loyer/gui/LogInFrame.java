@@ -23,6 +23,8 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
+import org.jfree.ui.RefineryUtilities;
+
 public abstract class LogInFrame {
   
   /**主页面*/
@@ -153,7 +155,10 @@ public abstract class LogInFrame {
     logInButt.setForeground(new Color(0, 0, 0));
     logInButt.setFont(new Font("宋体", Font.PLAIN, 16));
     logInButt.setBackground(new Color(255, 255, 255));
-    panel3.add(logInButt);    
+    panel3.add(logInButt);
+    
+    frame.pack();
+    RefineryUtilities.centerFrameOnScreen(frame);
   }
   /**
    * 登录事件

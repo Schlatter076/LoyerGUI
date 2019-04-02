@@ -7,16 +7,24 @@ import java.awt.FileDialog;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Properties;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -37,8 +45,21 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.Document;
+
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.plot.PiePlot;
+
+import gnu.io.SerialPort;
+import gnu.io.SerialPortEvent;
+import loyer.exception.NoSuchPort;
+import loyer.exception.NotASerialPort;
+import loyer.exception.PortInUse;
+import loyer.exception.SerialPortParamFail;
+import loyer.exception.TooManyListeners;
+import loyer.serial.SerialPortTools;
 
 import javax.swing.JSeparator;
 import javax.swing.JToggleButton;
@@ -90,18 +111,24 @@ abstract public class LoyerFrame {
   protected JMenuItem aboutItem;
   /**串口工具栏*/
   protected JToolBar comToolBar;
-  /**串口1按钮*/
-  protected JToggleButton com1Butt;
-  /**串口2按钮*/
-  protected JToggleButton com2Butt;
-  /**串口3按钮*/
-  protected JToggleButton com3Butt;
-  /**串口4按钮*/
-  protected JToggleButton com4Butt;
-  /**串口5按钮*/
-  protected JToggleButton com5Butt;
-  /**串口6按钮*/
-  protected JToggleButton com6Butt;
+  /**串口按钮*/
+  protected JToggleButton comButt[] = new JToggleButton[7];
+  /**预定义7个串口*/
+  protected SerialPort[] COM = new SerialPort[7];
+  /**串口名*/
+  protected String[] comName = new String[7];
+  /**波特率*/
+  protected int[] baudrate = new int[7];
+  /**数据位*/
+  protected int[] dataBit = new int[7];
+  /**停止位*/
+  protected int[] stopBit = new int[7];
+  /**校验位*/
+  protected int[] parity = new int[7];
+  /** 串口列表 */
+  protected ArrayList<String> portList;
+  /**追溯串口按钮*/
+  protected JToggleButton traceBackButt;
   /** 测试数据显示面板 */
   protected JScrollPane dataPanel;
   /**左页面*/
@@ -234,29 +261,41 @@ abstract public class LoyerFrame {
     toolBar.add(new JSeparator());
     comToolBar = new JToolBar("窗口工具栏");
     toolBar.add(comToolBar);
-    com1Butt = new JToggleButton("COM1");
-    com1Butt.setFont(new Font("宋体", Font.PLAIN, 12));
-    comToolBar.add(com1Butt);
-    comToolBar.addSeparator();
-    com2Butt = new JToggleButton("COM2");
-    com2Butt.setFont(new Font("宋体", Font.PLAIN, 12));
-    comToolBar.add(com2Butt);
-    comToolBar.addSeparator();
-    com3Butt = new JToggleButton("COM3");
-    com3Butt.setFont(new Font("宋体", Font.PLAIN, 12));
-    comToolBar.add(com3Butt);
-    comToolBar.addSeparator();
-    com4Butt = new JToggleButton("COM4");
-    com4Butt.setFont(new Font("宋体", Font.PLAIN, 12));
-    comToolBar.add(com4Butt);
-    comToolBar.addSeparator();
-    com5Butt = new JToggleButton("COM5");
-    com5Butt.setFont(new Font("宋体", Font.PLAIN, 12));
-    comToolBar.add(com5Butt);
-    comToolBar.addSeparator();
-    com6Butt = new JToggleButton("COM6");
-    com6Butt.setFont(new Font("宋体", Font.PLAIN, 12));
-    comToolBar.add(com6Butt);
+    for(int i = 0; i < 7; i++) {
+      comButt[i] = new JToggleButton("COM" + (i+1));
+      comButt[i].setFont(new Font("宋体", Font.PLAIN, 12));
+      comToolBar.add(comButt[i]);
+      if(i < 6) {
+        comToolBar.addSeparator();
+      }
+      comButt[i].addActionListener(new COMListener(i));
+    }
+    //===========================
+    toolBar.addSeparator();
+    JComboBox<String> retrospectiveBox = new JComboBox<>();
+    for (int i = 1; i <= 20; i++) {
+      retrospectiveBox.addItem("追溯串口:COM" + i);
+    }
+    retrospectiveBox.setSelectedIndex(6);
+    retrospectiveBox.addItemListener(new ItemListener() {
+      @Override
+      public void itemStateChanged(ItemEvent e) {
+        if (statuField.getText().equals("测试中...")) {
+          JOptionPane.showMessageDialog(null, "测试进行中，不可操作！");
+          return;
+        } else if (e.getStateChange() == ItemEvent.SELECTED) {
+          String[] s = ((String) retrospectiveBox.getSelectedItem()).split(":");
+          comName[6] = s[1];
+          comButt[6].setText(comName[6]);
+          if (COM[6] != null) {
+            COM[6].close();
+            COM[6] = null;
+          }
+          initCOM(6);
+        }
+      }
+    });
+    toolBar.add(retrospectiveBox);
 
     dataPanel = new JScrollPane();
     dataPanel.setBorder(new TitledBorder(new LineBorder(Color.GRAY, 1), "测试数据:", TitledBorder.CENTER, TitledBorder.TOP,
@@ -362,11 +401,15 @@ abstract public class LoyerFrame {
         new Font("宋体", Font.PLAIN, 13), Color.BLACK));
     //persistScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
     persistScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
-    tablePanel.add(dataPanel, BorderLayout.CENTER);
+    
+    JSplitPane centerSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, persistScroll, dataPanel);
+    centerSplitPane.setResizeWeight(0.1D);
+    
+    tablePanel.add(centerSplitPane, BorderLayout.CENTER);
     tablePanel.add(progressBar, BorderLayout.EAST);
     tablePanel.add(scanField, BorderLayout.SOUTH);
     tablePanel.add(productField, BorderLayout.NORTH);
-    tablePanel.add(persistScroll, BorderLayout.WEST);
+    //tablePanel.add(persistScroll, BorderLayout.WEST);
 
     editArea = new JTextArea();
     editArea.setFont(new Font("楷体", Font.PLAIN, 13));
@@ -413,6 +456,31 @@ abstract public class LoyerFrame {
       openDialog.setDirectory(".");
       openDialog.setVisible(true);
     });
+    
+    Document dt = statuField.getDocument();
+    dt.addDocumentListener(new DocumentListener() {
+
+      @Override
+      public void removeUpdate(DocumentEvent e) {
+      }
+
+      @Override
+      public void insertUpdate(DocumentEvent e) {
+        if (statuField.getText().equals("PASS")) {
+          statuField.setBackground(GREEN);
+        } else if (statuField.getText().equals("NG")) {
+          statuField.setBackground(Color.RED);
+        } else {
+          statuField.setBackground(Color.ORANGE);
+        }
+      }
+
+      @Override
+      public void changedUpdate(DocumentEvent e) {
+      }
+    });
+    
+    loadProperties();
   }
 
   /**
@@ -477,6 +545,48 @@ abstract public class LoyerFrame {
     piePlot.setDataset(MyPieChart.getDataSet(ok, ng));
   }
   /**
+   * 导入配置文件
+   */
+  public void loadProperties() {
+    portList = SerialPortTools.findPort();
+    Properties prop = new Properties();
+    try {
+      prop.load(new FileInputStream(new File("SerialPorts.properties")));
+      for(int i = 0; i < 7; i++) {
+        comName[i] = prop.getProperty("com" + (i+1) + "Name");
+        baudrate[i] = Integer.parseInt(prop.getProperty("com" + (i+1) + "Baudrate"));
+        dataBit[i] = Integer.parseInt(prop.getProperty("com" + (i+1) + "DataBits"));
+        stopBit[i] = Integer.parseInt(prop.getProperty("com" + (i+1) + "StopBits"));
+        parity[i] = Integer.parseInt(prop.getProperty("com" + (i+1) + "Parity"));
+      }
+    } catch (IOException e) {
+      JOptionPane.showMessageDialog(null, "配置文件导入失败，请检查后重试！");
+    }
+  }
+  /**
+   * 关闭所有串口
+   */
+  public void closeAllPorts() {
+    for(int i = 0; i < 7; i++) {
+      if(COM[i] != null) {
+        COM[i].close();
+        COM[i] = null;
+        comButt[i].setSelected(false);
+      }
+    }
+  }
+  /**
+   * 关闭指定串口
+   * @param port
+   */
+  public void closePort(int port) {
+    if(COM[port] != null) {
+      COM[port].close();
+      COM[port] = null;
+      comButt[port].setSelected(false);
+    }
+  }
+  /**
    * 验证管理员密码是否正确
    * 
    * @param command
@@ -487,17 +597,63 @@ abstract public class LoyerFrame {
   /**
    * 打开串口调试工具方法
    */
-  abstract public void usartMethod();
+  public abstract void usartMethod();
   /**查看测试结果方法*/
-  abstract public void resultView();
+  public abstract void resultView();
   /**查看不良报告方法*/
-  abstract public void reportView();
+  public abstract void reportView();
   /**捺印事件*/
-  abstract public void nayinMethod();
+  public abstract void nayinMethod();
+  /**
+   * 初始化串口
+   * @param num
+   */
+  public void initCOM(int num) {
+    if (portList.contains(comName[num]) && COM[num] == null) {
+      try {
+        COM[num] = SerialPortTools.getPort(comName[num], baudrate[num], dataBit[num], stopBit[num], parity[num]);
+      } catch (SerialPortParamFail | NotASerialPort | NoSuchPort | PortInUse e) {
+        JOptionPane.showMessageDialog(null, comName[num] + e.toString());
+      }
+      comButt[num].setSelected(true);
+      try {
+        SerialPortTools.add(COM[num], event -> {
+          switch (event.getEventType()) {
+          case SerialPortEvent.BI: // 10 通讯中断
+          case SerialPortEvent.OE: // 7 溢位（溢出）错误
+          case SerialPortEvent.FE: // 9 帧错误
+          case SerialPortEvent.PE: // 8 奇偶校验错误
+          case SerialPortEvent.CD: // 6 载波检测
+          case SerialPortEvent.CTS: // 3 清除待发送数据
+          case SerialPortEvent.DSR: // 4 待发送数据准备好了
+          case SerialPortEvent.RI: // 5 振铃指示
+          case SerialPortEvent.OUTPUT_BUFFER_EMPTY: // 2 输出缓冲区已清空
+            JOptionPane.showMessageDialog(null, comName[num] + event.getSource());
+            break;
+          case SerialPortEvent.DATA_AVAILABLE: {
+              COMDatasArrived(num);
+          }
+            break;
+          }
+        });
+      } catch (TooManyListeners e) {
+        JOptionPane.showMessageDialog(null, comName[num] + e.toString());
+      }
+    } else {
+      JOptionPane.showMessageDialog(null, "未发现" + comName[num]);
+      comButt[num].setSelected(false);
+    }
+  }
+  /**
+   * 串口数据到达
+   * @param port 代表对应串口
+   */
+  public abstract void COMDatasArrived(int port);
+  
   /**
    * 系统退出
    */
-  abstract public void close();
+  public abstract void close();
   /**
    * 测试数据及测试时间显示面板
    * 
@@ -513,6 +669,22 @@ abstract public class LoyerFrame {
       setBorder(tb);
       setLayout(new BorderLayout());
       add(field, BorderLayout.CENTER);
+    }
+  }
+  class COMListener implements ActionListener {
+
+    private int num;
+    
+    public COMListener(int num) {
+      super();
+      this.num = num;
+    }
+    @Override
+    public void actionPerformed(ActionEvent e) {
+      if (COM[num] == null) {
+        initCOM(num);
+      } else
+        comButt[num].setSelected(true);
     }
   }
 
