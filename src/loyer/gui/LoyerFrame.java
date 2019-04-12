@@ -631,7 +631,31 @@ abstract public class LoyerFrame {
             JOptionPane.showMessageDialog(null, comName[num] + event.getSource());
             break;
           case SerialPortEvent.DATA_AVAILABLE: {
-              COMDatasArrived(num);
+              switch (num) {
+              case 0:
+                COM1DataArrived();
+                break;
+              case 1:
+                COM2DataArrived();
+                break;
+              case 2:
+                COM3DataArrived();
+                break;
+              case 3:
+                COM4DataArrived();
+                break;
+              case 4:
+                COM5DataArrived();
+                break;
+              case 5:
+                COM6DataArrived();
+                break;
+              case 6:
+                COM7DataArrived();
+                break;
+              default:
+                break;
+              }
           }
             break;
           }
@@ -645,10 +669,40 @@ abstract public class LoyerFrame {
     }
   }
   /**
-   * 串口数据到达
+   * 串口1数据到达
    * @param port 代表对应串口
    */
-  public abstract void COMDatasArrived(int port);
+  public abstract void COM1DataArrived();
+  /**
+   * 串口2数据到达
+   * @param port 代表对应串口
+   */
+  public abstract void COM2DataArrived();
+  /**
+   * 串口3数据到达
+   * @param port 代表对应串口
+   */
+  public abstract void COM3DataArrived();
+  /**
+   * 串口4数据到达
+   * @param port 代表对应串口
+   */
+  public abstract void COM4DataArrived();
+  /**
+   * 串口5数据到达
+   * @param port 代表对应串口
+   */
+  public abstract void COM5DataArrived();
+  /**
+   * 串口6数据到达
+   * @param port 代表对应串口
+   */
+  public abstract void COM6DataArrived();
+  /**
+   * 串口7数据到达
+   * @param port 代表对应串口
+   */
+  public abstract void COM7DataArrived();
   
   /**
    * 系统退出
