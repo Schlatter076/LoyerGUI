@@ -15,8 +15,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TooManyListenersException;
 
-import javax.swing.JOptionPane;
-
 import gnu.io.CommPort;
 import gnu.io.CommPortIdentifier;
 import gnu.io.NoSuchPortException;
@@ -124,7 +122,7 @@ public class SerialPortTools {
       pw.println(command);
       return true;
     } catch (IOException e) {
-      JOptionPane.showMessageDialog(null, port.getName() + "数据发送失败::" + e.getLocalizedMessage());
+      //JOptionPane.showMessageDialog(null, port.getName() + "数据发送失败::" + e.getLocalizedMessage());
       return false;
     }
   }
@@ -144,7 +142,7 @@ public class SerialPortTools {
       int len = br.read(data);
       return new String(data, 0, len);
     } catch (IOException e) {
-      JOptionPane.showMessageDialog(null, port.getName() + "数据接收失败::" + e.getLocalizedMessage());
+      //JOptionPane.showMessageDialog(null, port.getName() + "数据接收失败::" + e.getLocalizedMessage());
       return "";
     }
   }
@@ -164,7 +162,7 @@ public class SerialPortTools {
       bos.flush();
       return true;
     } catch (IOException e) {
-      JOptionPane.showMessageDialog(null, port.getName() + "数据发送失败::" + e.getLocalizedMessage());
+      //JOptionPane.showMessageDialog(null, port.getName() + "数据发送失败::" + e.getLocalizedMessage());
       return false;
     }
   }
@@ -180,7 +178,7 @@ public class SerialPortTools {
     try (BufferedInputStream bis = new BufferedInputStream(port.getInputStream())) {
       return (byte) bis.read();
     } catch (IOException e) {
-      JOptionPane.showMessageDialog(null, port.getName() + "数据接收失败::" + e.getLocalizedMessage());
+      //JOptionPane.showMessageDialog(null, port.getName() + "数据接收失败::" + e.getLocalizedMessage());
       return -1;
     }
   }
@@ -198,7 +196,7 @@ public class SerialPortTools {
       bis.read(values);
       return values;
     } catch (IOException e) {
-      JOptionPane.showMessageDialog(null, port.getName() + "数据接收失败::" + e.getLocalizedMessage());
+      //JOptionPane.showMessageDialog(null, port.getName() + "数据接收失败::" + e.getLocalizedMessage());
       return new byte[0];
     }
   }
@@ -218,7 +216,7 @@ public class SerialPortTools {
       bw.flush();
       return true;
     } catch (IOException e) {
-      JOptionPane.showMessageDialog(null, port.getName() + "数据发送失败::" + e.getLocalizedMessage());
+      //JOptionPane.showMessageDialog(null, port.getName() + "数据发送失败::" + e.getLocalizedMessage());
       return false;
     }
   }
@@ -237,7 +235,7 @@ public class SerialPortTools {
       br.read(values);
       return values;
     } catch (IOException e) {
-      JOptionPane.showMessageDialog(null, port.getName() + "数据接收失败::" + e.getLocalizedMessage());
+      //JOptionPane.showMessageDialog(null, port.getName() + "数据接收失败::" + e.getLocalizedMessage());
       return new char[0];
     }
   }

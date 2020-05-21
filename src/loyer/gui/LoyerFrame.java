@@ -33,6 +33,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
@@ -66,111 +67,114 @@ import javax.swing.JToggleButton;
 
 /**
  * 自定义测试系统显示界面
+ * 
  * @author Loyer
  * @coding UTF-8
  */
 abstract public class LoyerFrame {
 
-  /**顶级框架*/
+  /** 顶级框架 */
   protected JFrame frame;
   /** 获取当前屏幕宽度 */
   protected static final int WIDTH = Toolkit.getDefaultToolkit().getScreenSize().width;
   /** 获取当前屏幕高度 */
   protected static final int HEIGHT = Toolkit.getDefaultToolkit().getScreenSize().height;
-  /**菜单条*/
+  /** 菜单条 */
   protected JMenuBar menuBar;
-  /**文件菜单*/
+  /** 文件菜单 */
   protected JMenu fileMenu;
-  /**打开菜单*/
+  /** 打开菜单 */
   protected JMenuItem openItem;
-  /**退出菜单*/
+  /** 退出菜单 */
   protected JMenuItem exitItem;
-  /**编辑菜单*/
+  /** 编辑菜单 */
   protected JMenu editMenu;
-  /**打开调试工具菜单*/
+  /** 打开调试工具菜单 */
   protected JMenuItem usartItem;
-  /**查看测试结果菜单*/
+  /** 查看测试结果菜单 */
   protected JMenuItem resultItem;
-  /**查看不良报告菜单*/
+  /** 查看不良报告菜单 */
   protected JMenuItem ngReportItem;
-  /**工具栏*/
+  /** 工具栏 */
   protected JToolBar toolBar;
-  /**退出按钮*/
+  /** 退出按钮 */
   protected JButton exitButt;
-  /**打开调试工具按钮*/
+  /** 打开调试工具按钮 */
   protected JButton usartButt;
-  /**查看测试结果按钮*/
+  /** 查看测试结果按钮 */
   protected JButton resultButt;
-  /**查看不良报告按钮*/
+  /** 查看不良报告按钮 */
   protected JButton ngReportButt;
   /***/
   protected JSplitPane splitPane;
-  /**联系我们菜单*/
+  /** 联系我们菜单 */
   protected JMenuItem contactItem;
-  /**关于菜单*/
+  /** 关于菜单 */
   protected JMenuItem aboutItem;
-  /**串口工具栏*/
+  /** 串口工具栏 */
   protected JToolBar comToolBar;
-  /**串口按钮*/
+  /** 串口按钮 */
   protected JToggleButton comButt[] = new JToggleButton[7];
-  /**预定义7个串口*/
+  /** 预定义7个串口 */
   protected SerialPort[] COM = new SerialPort[7];
-  /**串口名*/
+  /** 串口名 */
   protected String[] comName = new String[7];
-  /**波特率*/
+  /** 波特率 */
   protected int[] baudrate = new int[7];
-  /**数据位*/
+  /** 数据位 */
   protected int[] dataBit = new int[7];
-  /**停止位*/
+  /** 停止位 */
   protected int[] stopBit = new int[7];
-  /**校验位*/
+  /** 校验位 */
   protected int[] parity = new int[7];
   /** 串口列表 */
   protected ArrayList<String> portList;
-  /**追溯串口按钮*/
+  /** 追溯串口按钮 */
   protected JToggleButton traceBackButt;
+  /** 测试线程运行状态指示 */
+  protected JRadioButton testThreadButt;
   /** 测试数据显示面板 */
   protected JScrollPane dataPanel;
-  /**左页面*/
+  /** 左页面 */
   protected JSplitPane leftSplitPane;
-  /**右页面*/
+  /** 右页面 */
   protected JPanel rightPanel;
-  /**进度条*/
+  /** 进度条 */
   protected JProgressBar progressBar;
-  /**进度条值*/
+  /** 进度条值 */
   protected int progressValue = 0;
-  /**测试总数文本框*/
+  /** 测试总数文本框 */
   protected JTextField totalField;
-  /**测试ok文本框*/
+  /** 测试ok文本框 */
   protected JTextField okField;
-  /**测试ng文本框*/
+  /** 测试ng文本框 */
   protected JTextField ngField;
-  /**测试时间文本框*/
+  /** 测试时间文本框 */
   protected JTextField timeField;
-  /**运行状态文本框*/
+  /** 运行状态文本框 */
   protected JTextField statuField;
-  /**产品型号文本框*/
+  /** 产品型号文本框 */
   protected JTextField productField;
   /** 产品型号 */
   protected String PRODUCT_NAME = "机种名";
-  /**测试总数计数器*/
+  /** 测试总数计数器 */
   protected int totalCount = 0;
-  /**测试ok计数器*/
+  /** 测试ok计数器 */
   protected int okCount = 0;
-  /**测试ng计数器*/
+  /** 测试ng计数器 */
   protected int ngCount = 0;
-  /**测试时间计数器*/
+  /** 测试时间计数器 */
   protected int timeCount = 0;
   /** 饼图面板 */
   protected ChartPanel chartPanel;
-  /**饼图定义类*/
+  /** 饼图定义类 */
   protected MyPieChart myPie;
   protected PiePlot piePlot;
   /** 产品扫描区域 */
   protected JTextField scanField;
-  /**捺印复选框*/
+  /** 捺印复选框 */
   protected JCheckBox nayinButt;
-  /**点测复选框*/
+  /** 点测复选框 */
   protected JCheckBox spotButt;
   /** 左下侧日志显示区域 */
   protected JTextArea editArea;
@@ -178,20 +182,20 @@ abstract public class LoyerFrame {
   protected SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss ");
   /** 换行符 */
   protected static final String SEPARATOR = System.getProperty("line.separator");
-  /**帮助菜单*/
+  /** 帮助菜单 */
   protected JMenu helpMenu;
-  /**保留页面*/
+  /** 保留页面 */
   protected JScrollPane persistScroll;
-  /**自定义绿色*/
+  /** 自定义绿色 */
   protected static final Color GREEN = new Color(0, 204, 51);
-  
-  /**构造器*/
+
+  /** 构造器 */
   public LoyerFrame() {
     initialize();
   }
 
   private void initialize() {
-    
+
     try {
       // 将界面风格设置成和系统一置
       UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -226,7 +230,7 @@ abstract public class LoyerFrame {
     editMenu.add(usartItem);
     editMenu.add(resultItem);
     editMenu.add(ngReportItem);
-    menuBar.add(helpMenu);    
+    menuBar.add(helpMenu);
     frame.setJMenuBar(menuBar);
 
     // 设置工具栏
@@ -261,16 +265,16 @@ abstract public class LoyerFrame {
     toolBar.add(new JSeparator());
     comToolBar = new JToolBar("窗口工具栏");
     toolBar.add(comToolBar);
-    for(int i = 0; i < 7; i++) {
-      comButt[i] = new JToggleButton("COM" + (i+1));
+    for (int i = 0; i < 7; i++) {
+      comButt[i] = new JToggleButton("COM" + (i + 1));
       comButt[i].setFont(new Font("宋体", Font.PLAIN, 12));
       comToolBar.add(comButt[i]);
-      if(i < 6) {
+      if (i < 6) {
         comToolBar.addSeparator();
       }
       comButt[i].addActionListener(new COMListener(i));
     }
-    //===========================
+    // ===========================
     toolBar.addSeparator();
     JComboBox<String> retrospectiveBox = new JComboBox<>();
     for (int i = 1; i <= 20; i++) {
@@ -296,6 +300,11 @@ abstract public class LoyerFrame {
       }
     });
     toolBar.add(retrospectiveBox);
+
+    toolBar.addSeparator();
+    testThreadButt = new JRadioButton();
+    testThreadButt.setBackground(Color.YELLOW);
+    toolBar.add(testThreadButt);
 
     dataPanel = new JScrollPane();
     dataPanel.setBorder(new TitledBorder(new LineBorder(Color.GRAY, 1), "测试数据:", TitledBorder.CENTER, TitledBorder.TOP,
@@ -394,22 +403,22 @@ abstract public class LoyerFrame {
     JPanel tablePanel = new JPanel(new BorderLayout());
     tablePanel.setBorder(new TitledBorder(new LineBorder(Color.GRAY, 3), "测试步骤及内容", TitledBorder.CENTER,
         TitledBorder.TOP, new Font("楷体", Font.PLAIN, 16), Color.BLACK));
-    
+
     persistScroll = new JScrollPane();
     persistScroll.setPreferredSize(new Dimension(100, 200));
     persistScroll.setBorder(new TitledBorder(new LineBorder(Color.GRAY, 1), "保留页", TitledBorder.LEFT, TitledBorder.TOP,
         new Font("宋体", Font.PLAIN, 13), Color.BLACK));
-    //persistScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+    // persistScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
     persistScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
-    
+
     JSplitPane centerSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, persistScroll, dataPanel);
     centerSplitPane.setResizeWeight(0.1D);
-    
+
     tablePanel.add(centerSplitPane, BorderLayout.CENTER);
     tablePanel.add(progressBar, BorderLayout.EAST);
     tablePanel.add(scanField, BorderLayout.SOUTH);
     tablePanel.add(productField, BorderLayout.NORTH);
-    //tablePanel.add(persistScroll, BorderLayout.WEST);
+    // tablePanel.add(persistScroll, BorderLayout.WEST);
 
     editArea = new JTextArea();
     editArea.setFont(new Font("楷体", Font.PLAIN, 13));
@@ -429,7 +438,10 @@ abstract public class LoyerFrame {
     pksLabel.setFont(new Font("楷体", Font.PLAIN, 13));
     pksLabel.setHorizontalAlignment(SwingConstants.LEFT);
     frame.getContentPane().add(pksLabel, BorderLayout.SOUTH);
-    /*============================================================================================*/
+    /*
+     * =============================================================================
+     * ===============
+     */
     // 窗口"X"关闭事件
     frame.addWindowListener(new WindowAdapter() {
       @Override
@@ -449,14 +461,14 @@ abstract public class LoyerFrame {
     resultItem.addActionListener(e -> resultView());
     ngReportButt.addActionListener(e -> reportView());
     ngReportItem.addActionListener(e -> reportView());
-    //打开菜单事件
+    // 打开菜单事件
     openItem.addActionListener(e -> {
       logBySelf(e.getActionCommand());
       FileDialog openDialog = new FileDialog(frame, "打开文件", FileDialog.LOAD);
       openDialog.setDirectory(".");
       openDialog.setVisible(true);
     });
-    
+
     Document dt = statuField.getDocument();
     dt.addDocumentListener(new DocumentListener() {
 
@@ -479,7 +491,7 @@ abstract public class LoyerFrame {
       public void changedUpdate(DocumentEvent e) {
       }
     });
-    
+
     loadProperties();
   }
 
@@ -491,9 +503,12 @@ abstract public class LoyerFrame {
   public void logBySelf(String info) {
     editArea.append(dateFormat.format(new Date()) + "::" + info + SEPARATOR);
   }
+
   /**
    * 保存日志到本地
-   * @param directory 路径
+   * 
+   * @param directory
+   *          路径
    */
   public void log2txt(String directory) {
     String infos = editArea.getText();
@@ -544,6 +559,7 @@ abstract public class LoyerFrame {
   public void setPieChart(int ok, int ng) {
     piePlot.setDataset(MyPieChart.getDataSet(ok, ng));
   }
+
   /**
    * 导入配置文件
    */
@@ -552,40 +568,44 @@ abstract public class LoyerFrame {
     Properties prop = new Properties();
     try {
       prop.load(new FileInputStream(new File("SerialPorts.properties")));
-      for(int i = 0; i < 7; i++) {
-        comName[i] = prop.getProperty("com" + (i+1) + "Name");
-        baudrate[i] = Integer.parseInt(prop.getProperty("com" + (i+1) + "Baudrate"));
-        dataBit[i] = Integer.parseInt(prop.getProperty("com" + (i+1) + "DataBits"));
-        stopBit[i] = Integer.parseInt(prop.getProperty("com" + (i+1) + "StopBits"));
-        parity[i] = Integer.parseInt(prop.getProperty("com" + (i+1) + "Parity"));
+      for (int i = 0; i < 7; i++) {
+        comName[i] = prop.getProperty("com" + (i + 1) + "Name");
+        baudrate[i] = Integer.parseInt(prop.getProperty("com" + (i + 1) + "Baudrate"));
+        dataBit[i] = Integer.parseInt(prop.getProperty("com" + (i + 1) + "DataBits"));
+        stopBit[i] = Integer.parseInt(prop.getProperty("com" + (i + 1) + "StopBits"));
+        parity[i] = Integer.parseInt(prop.getProperty("com" + (i + 1) + "Parity"));
       }
     } catch (IOException e) {
       JOptionPane.showMessageDialog(null, "配置文件导入失败，请检查后重试！");
     }
   }
+
   /**
    * 关闭所有串口
    */
   public void closeAllPorts() {
-    for(int i = 0; i < 7; i++) {
-      if(COM[i] != null) {
+    for (int i = 0; i < 7; i++) {
+      if (COM[i] != null) {
         COM[i].close();
         COM[i] = null;
         comButt[i].setSelected(false);
       }
     }
   }
+
   /**
    * 关闭指定串口
+   * 
    * @param port
    */
   public void closePort(int port) {
-    if(COM[port] != null) {
+    if (COM[port] != null) {
       COM[port].close();
       COM[port] = null;
       comButt[port].setSelected(false);
     }
   }
+
   /**
    * 验证管理员密码是否正确
    * 
@@ -594,18 +614,24 @@ abstract public class LoyerFrame {
    * @return 布尔值
    */
   abstract public boolean pwdIsPassed(String command);
+
   /**
    * 打开串口调试工具方法
    */
   public abstract void usartMethod();
-  /**查看测试结果方法*/
+
+  /** 查看测试结果方法 */
   public abstract void resultView();
-  /**查看不良报告方法*/
+
+  /** 查看不良报告方法 */
   public abstract void reportView();
-  /**捺印事件*/
+
+  /** 捺印事件 */
   public abstract void nayinMethod();
+
   /**
    * 初始化串口
+   * 
    * @param num
    */
   public void initCOM(int num) {
@@ -628,34 +654,34 @@ abstract public class LoyerFrame {
           case SerialPortEvent.DSR: // 4 待发送数据准备好了
           case SerialPortEvent.RI: // 5 振铃指示
           case SerialPortEvent.OUTPUT_BUFFER_EMPTY: // 2 输出缓冲区已清空
-            JOptionPane.showMessageDialog(null, comName[num] + event.getSource());
+            // JOptionPane.showMessageDialog(null, comName[num] + event.getSource());
             break;
           case SerialPortEvent.DATA_AVAILABLE: {
-              switch (num) {
-              case 0:
-                COM1DataArrived();
-                break;
-              case 1:
-                COM2DataArrived();
-                break;
-              case 2:
-                COM3DataArrived();
-                break;
-              case 3:
-                COM4DataArrived();
-                break;
-              case 4:
-                COM5DataArrived();
-                break;
-              case 5:
-                COM6DataArrived();
-                break;
-              case 6:
-                COM7DataArrived();
-                break;
-              default:
-                break;
-              }
+            switch (num) {
+            case 0:
+              COM1DataArrived();
+              break;
+            case 1:
+              COM2DataArrived();
+              break;
+            case 2:
+              COM3DataArrived();
+              break;
+            case 3:
+              COM4DataArrived();
+              break;
+            case 4:
+              COM5DataArrived();
+              break;
+            case 5:
+              COM6DataArrived();
+              break;
+            case 6:
+              COM7DataArrived();
+              break;
+            default:
+              break;
+            }
           }
             break;
           }
@@ -668,46 +694,68 @@ abstract public class LoyerFrame {
       comButt[num].setSelected(false);
     }
   }
+
   /**
    * 串口1数据到达
-   * @param port 代表对应串口
+   * 
+   * @param port
+   *          代表对应串口
    */
   public abstract void COM1DataArrived();
+
   /**
    * 串口2数据到达
-   * @param port 代表对应串口
+   * 
+   * @param port
+   *          代表对应串口
    */
   public abstract void COM2DataArrived();
+
   /**
    * 串口3数据到达
-   * @param port 代表对应串口
+   * 
+   * @param port
+   *          代表对应串口
    */
   public abstract void COM3DataArrived();
+
   /**
    * 串口4数据到达
-   * @param port 代表对应串口
+   * 
+   * @param port
+   *          代表对应串口
    */
   public abstract void COM4DataArrived();
+
   /**
    * 串口5数据到达
-   * @param port 代表对应串口
+   * 
+   * @param port
+   *          代表对应串口
    */
   public abstract void COM5DataArrived();
+
   /**
    * 串口6数据到达
-   * @param port 代表对应串口
+   * 
+   * @param port
+   *          代表对应串口
    */
   public abstract void COM6DataArrived();
+
   /**
    * 串口7数据到达
-   * @param port 代表对应串口
+   * 
+   * @param port
+   *          代表对应串口
    */
   public abstract void COM7DataArrived();
-  
+
   /**
    * 系统退出
    */
   public abstract void close();
+
   /**
    * 测试数据及测试时间显示面板
    * 
@@ -725,14 +773,16 @@ abstract public class LoyerFrame {
       add(field, BorderLayout.CENTER);
     }
   }
+
   class COMListener implements ActionListener {
 
     private int num;
-    
+
     public COMListener(int num) {
       super();
       this.num = num;
     }
+
     @Override
     public void actionPerformed(ActionEvent e) {
       if (COM[num] == null) {
